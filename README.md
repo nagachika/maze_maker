@@ -13,3 +13,6 @@ Maze Maker depends on the followings.
 - Alloy
 - Ruby (2.0.0 or later)
 
+## License
+
+This software is released under the MIT License, see LICENSE.
