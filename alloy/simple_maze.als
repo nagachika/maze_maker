@@ -5,10 +5,10 @@ open util/ordering[Row] as rows
 
 // 迷路のサイズ
 fun height : Int {
-  3
+  10
 }
 fun width: Int {
-  3
+  10
 }
 
 // 隣接する Cell
@@ -52,4 +52,4 @@ fact {
 run {
   #Col = width[]
   #Row = height[]
-} for 3
+} for 10
