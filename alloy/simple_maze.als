@@ -3,14 +3,6 @@ module maze_maker/simple_maze
 open util/ordering[Col] as cols
 open util/ordering[Row] as rows
 
-// 迷路のサイズ
-fun height : Int {
-  10
-}
-fun width: Int {
-  10
-}
-
 // 隣接する Cell
 fun adjacent (col: Col, row: Row) : Col -> Row {
   col.prev -> row +
@@ -49,7 +41,4 @@ fact {
   edge[exit_x, exit_y]
 }
 
-run {
-  #Col = width[]
-  #Row = height[]
-} for 10
+run {} for exactly 10 Col, exactly 10 Row
