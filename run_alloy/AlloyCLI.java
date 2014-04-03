@@ -17,6 +17,7 @@
 
 package edu.mit.csail.sdg.alloy4whole;
 
+import java.io.File;
 import edu.mit.csail.sdg.alloy4.A4Reporter;
 import edu.mit.csail.sdg.alloy4.Err;
 import edu.mit.csail.sdg.alloy4.ErrorWarning;
@@ -31,6 +32,25 @@ import edu.mit.csail.sdg.alloy4viz.VizGUI;
 /** This class demonstrates how to access Alloy4 via the compiler methods. */
 
 public final class AlloyCLI {
+
+    public static String basename(String path) {
+        if (path == null) {
+            return null;
+        }
+        File f = new File(path);
+        return f.getName();
+    }
+
+    public static String removeExt(String path) {
+        if (path == null) {
+            return null;
+        }
+        int pos = path.lastIndexOf(".");
+        if (pos != -1) {
+          path = path.substring(0, pos);
+        }
+        return path;
+    }
 
     /*
      * Execute every command in every file.
@@ -57,35 +77,43 @@ public final class AlloyCLI {
             }
         };
         int answer_index = 0;
-        for(String filename:args) {
+        if (args.length == 0) {
+            System.err.println("Usage: AlloyCLI input.als [output-dir]");
+            return;
+        }
+        String alsfile = args[0];
+        String prefix = removeExt(basename(alsfile));
+        String outdir = ".";
+        if (args.length > 1) {
+          outdir = args[1];
+        }
 
-            // Parse+typecheck the model
-            System.out.println("=========== Parsing+Typechecking "+filename+" =============");
-            Module world = CompUtil.parseEverything_fromFile(rep, null, filename);
+        // Parse+typecheck the model
+        System.out.println("=========== Parsing+Typechecking "+alsfile+" =============");
+        Module world = CompUtil.parseEverything_fromFile(rep, null, alsfile);
 
-            // Choose some default options for how you want to execute the commands
-            A4Options options = new A4Options();
-            options.solver = A4Options.SatSolver.SAT4J;
+        // Choose some default options for how you want to execute the commands
+        A4Options options = new A4Options();
+        options.solver = A4Options.SatSolver.SAT4J;
 
-            for (Command command: world.getAllCommands()) {
-                // Execute the command
-                System.out.println("============ Command "+command+": ============");
-                A4Solution ans = TranslateAlloyToKodkod.execute_command(rep, world.getAllReachableSigs(), command, options);
+        for (Command command: world.getAllCommands()) {
+            // Execute the command
+            System.out.println("============ Command "+command+": ============");
+            A4Solution ans = TranslateAlloyToKodkod.execute_command(rep, world.getAllReachableSigs(), command, options);
 
-                // If satisfiable...
-                while (ans.satisfiable()) {
-                    // You can query "ans" to find out the values of each set or type.
-                    // This can be useful for debugging.
-                    //
-                    // You can also write the outcome to an XML file
-                    System.out.println(ans);
-                    ans.writeXML(String.format("output%04d.xml", answer_index));
-                    answer_index++;
-                    ans = ans.next();
-                }
-                // Print the outcome
+            // If satisfiable...
+            while (ans.satisfiable()) {
+                // You can query "ans" to find out the values of each set or type.
+                // This can be useful for debugging.
+                //
+                // You can also write the outcome to an XML file
                 System.out.println(ans);
+                ans.writeXML(String.format("%s/%s%04d.xml", outdir, prefix, answer_index));
+                answer_index++;
+                ans = ans.next();
             }
+            // Print the outcome
+            System.out.println(ans);
         }
         System.out.println("Num answer: " + answer_index);
     }
