@@ -50,4 +50,4 @@ fact {
 }
 
 run {
-} for exactly 10 Col, exactly 10 Row, exactly 100 Tile
+} for exactly 7 Col, exactly 7 Row, exactly 49 Tile
