@@ -37,9 +37,9 @@ pred edge (t: Tile) {
 
 fact {
   // tile に含まれない Tile はなし
-  all t: Tile | t in Row.(Col.tile)
-  // Row, Col が異なったら Tile も必ず異なる
-  all c1, c2: Col, r1, r2: Row | (c1 != c2 or r1 != r2) => no (tile[c1, r1] & tile[c2, r2])
+  Tile in tile[Col, Row]
+  // Row, Col の組と Tile は必ず1対1対応
+  all t: Tile | one tile.t
   // link の連結は反射的
   link = ~link
   // 全ての Tile は link で繋がる
